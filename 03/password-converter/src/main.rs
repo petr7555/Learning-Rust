@@ -38,8 +38,8 @@ fn main() -> std::io::Result<()> {
     for line in input_reader.lines() {
         let current_line = line?;
 
-        if current_line.contains(":") {
-            let values: Vec<&str> = current_line.split(":").collect();
+        if current_line.contains(':') {
+            let values: Vec<&str> = current_line.split(':').collect();
             entry_vec.push(String::from(values[1].trim()));
         }
 
