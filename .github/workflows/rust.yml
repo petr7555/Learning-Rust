@@ -17,4 +17,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build, test, clippy all
-      run: sh ./scripts/ci.sh
+      run: sh -x ./scripts/ci.sh
