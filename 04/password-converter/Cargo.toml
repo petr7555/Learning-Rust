@@ -1,5 +1,5 @@
 [package]
-name = "demo"
+name = "password-converter"
 version = "0.1.0"
 authors = ["Petr Janik <485122@mail.muni.cz>"]
 edition = "2018"
