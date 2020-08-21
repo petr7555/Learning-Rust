@@ -1,6 +1,5 @@
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::{BufRead, BufReader, BufWriter, Result, Write};
+use std::io::{BufRead, BufReader, BufWriter, Read, Result, Write};
 
 use super::{Converter, PasswordEntry};
 
@@ -23,14 +22,14 @@ use super::{Converter, PasswordEntry};
 /// let mut manager = KasperskyPasswordManager::create(input, output);
 /// manager.convert();
 /// ```
-pub struct KasperskyPasswordManager {
-    input: BufReader<File>,
-    output: BufWriter<File>,
+pub struct KasperskyPasswordManager<T: Read, U: Write> {
+    input: BufReader<T>,
+    output: BufWriter<U>,
     password_entries: HashMap<String, PasswordEntry>,
 }
 
-impl KasperskyPasswordManager {
-    pub fn create(input: BufReader<File>, output: BufWriter<File>) -> KasperskyPasswordManager {
+impl<T: Read, U: Write> KasperskyPasswordManager<T, U> {
+    pub fn create(input: BufReader<T>, output: BufWriter<U>) -> KasperskyPasswordManager<T, U> {
         KasperskyPasswordManager {
             input,
             output,
@@ -64,7 +63,7 @@ impl KasperskyPasswordManager {
     }
 }
 
-impl Converter for KasperskyPasswordManager {
+impl<T: Read, U: Write> Converter for KasperskyPasswordManager<T, U> {
     /// Converts kaspersky password file to csv
     fn convert(&mut self) -> Result<()> {
         let mut entry_vec = Vec::new();
@@ -96,8 +95,8 @@ impl Converter for KasperskyPasswordManager {
 
 #[cfg(test)]
 mod tests {
-    use crate::converters::kaspersky::KasperskyPasswordManager;
     use crate::converters::Converter;
+    use crate::converters::kaspersky::KasperskyPasswordManager;
 
     #[test]
     fn kaspersky_converts_passwords() {
