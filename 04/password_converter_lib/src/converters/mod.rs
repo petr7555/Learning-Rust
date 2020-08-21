@@ -1,6 +1,9 @@
 use std::io::Result;
 
+/// # Module converters
+/// Provides a common interface for all available password format converters.
 pub mod kaspersky;
+pub mod lastpass;
 
 pub struct PasswordEntry {
     pub url: String,
@@ -18,6 +21,8 @@ impl PasswordEntry {
     }
 }
 
+/// # Converter trait
 pub trait Converter {
-    fn convert(self) -> Result<()>;
+    /// Converts passwords
+    fn convert(& mut self) -> Result<()>;
 }
