@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run 04/adventure_game" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+    <option name="channel" value="DEFAULT" />
+    <option name="command" value="run --package adventure_game --bin adventure_game story.txt" />
+    <option name="allFeatures" value="false" />
+    <option name="emulateTerminal" value="false" />
+    <option name="backtrace" value="SHORT" />
+    <option name="workingDirectory" value="file://$PROJECT_DIR$/04/adventure_game" />
+    <envs />
+    <method v="2">
+      <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+    </method>
+  </configuration>
+</component>
