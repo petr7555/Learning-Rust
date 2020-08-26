@@ -8,5 +8,3 @@ build_test_clippy(){
 }
 
 find . -name 'Cargo.toml' | sort -u | build_test_clippy
-
-
