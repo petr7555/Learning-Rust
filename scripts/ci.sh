@@ -9,4 +9,4 @@ build_test_clippy(){
   exit $exit_code
 }
 
-find 04 -name 'Cargo.toml' | sort -u | build_test_clippy
+find . -name 'Cargo.toml' | sort -u | build_test_clippy
