@@ -1,6 +1,6 @@
-use std::io;
 use std::collections::HashMap;
 use std::fs::File;
+use std::io;
 use std::io::{Error, Read};
 
 use rand::Rng;
@@ -81,7 +81,7 @@ impl Executable for Scene {
             };
         };
         let next_scene_id: u32 = self.choices[choice as usize - 1].next_scene_id;
-        return scenes[&next_scene_id].clone();
+        scenes[&next_scene_id].clone()
     }
 }
 
@@ -98,7 +98,7 @@ pub fn play(scenes: HashMap<u32, Scene>) {
     const INITIAL_SCENE_INDEX: u32 = 0;
 
     let mut current_scene: Scene = scenes.get(&INITIAL_SCENE_INDEX)
-        .expect(format!("Story file must contain scene with id {}", INITIAL_SCENE_INDEX).as_str()).clone();
+        .unwrap_or_else(|| panic!("Story file must contain scene with id {}", INITIAL_SCENE_INDEX)).clone();
     while !is_end_scene(&current_scene) {
         current_scene = current_scene.execute(&scenes);
     }
