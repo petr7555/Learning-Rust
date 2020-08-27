@@ -1,0 +1,71 @@
+{
+  "scenes": [
+    {
+      "id": 0,
+      "story": "The adventure begins!",
+      "choices": [
+        {
+          "text": "1) Go to the city",
+          "next_scene_id": 1
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "story": "You are in the middle of the city.",
+      "choices": [
+        {
+          "text": "1) Go to shop",
+          "next_scene_id": 2
+        },
+        {
+          "text": "2) Go to forest",
+          "next_scene_id": 3
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "story": "You are in the shop.",
+      "choices": [
+        {
+          "text": "1) Leave the shop",
+          "next_scene_id": 1
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "fight_scene_info": {
+        "enemy": {
+          "health": 10,
+          "attack_min": 0,
+          "attack_max": 5
+        },
+        "player": {
+          "health": 20,
+          "attack_min": 0,
+          "attack_max": 3
+        },
+        "on_death": 4,
+        "on_win": 1
+      },
+      "story": "You see a dragon.",
+      "choices": [
+        {
+          "text": "1) Attack the dragon",
+          "next_scene_id": 3
+        },
+        {
+          "text": "2) Run away",
+          "next_scene_id": 1
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "story": "You died, game over!",
+      "choices": []
+    }
+  ]
+}
