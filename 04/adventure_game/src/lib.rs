@@ -49,39 +49,42 @@ impl Executable for Scene {
     fn execute(self, scenes: &HashMap<u32, Scene>) -> Scene {
         print_scene_story(&self);
         print_scene_choices(&self);
-        if self.fight_scene_info.is_none() {
-            let choice = get_choice_from_user(self.choices.len() as u32);
-            let next_scene_id: u32 = self.choices[choice as usize - 1].next_scene_id;
-            return scenes[&next_scene_id].clone();
+        match self.fight_scene_info {
+            Some(mut info) => {
+                if info.player.health <= 0 {
+                    return scenes[&info.on_death].clone();
+                }
+                if info.enemy.health <= 0 {
+                    return scenes[&info.on_win].clone();
+                }
+                println!("Your health: {}; attack damage range: {}-{}", info.player.health, info.player.attack_min, info.player.attack_max);
+                println!("Enemy health: {}; attack damage range: {}-{}", info.enemy.health, info.enemy.attack_min, info.enemy.attack_max);
+                let choice = get_choice_from_user(self.choices.len() as u32);
+                // choice 1 is always attack
+                if choice == 1 {
+                    let mut rng = rand::thread_rng();
+                    let player_dmg = rng.gen_range(info.player.attack_min, info.player.attack_max);
+                    let enemy_dmg = rng.gen_range(info.enemy.attack_min, info.enemy.attack_max);
+                    println!("Player attacks and deals {} damage.", player_dmg);
+                    println!("Enemy attacks at the same time and deals {} damage.", enemy_dmg);
+                    info.enemy.health -= player_dmg;
+                    info.player.health -= enemy_dmg;
+                    return Scene {
+                        id: self.id,
+                        fight_scene_info: Option::from(info),
+                        story: self.story,
+                        choices: self.choices,
+                    };
+                };
+                let next_scene_id: u32 = self.choices[choice as usize - 1].next_scene_id;
+                scenes[&next_scene_id].clone()
+            }
+            None => {
+                let choice = get_choice_from_user(self.choices.len() as u32);
+                let next_scene_id: u32 = self.choices[choice as usize - 1].next_scene_id;
+                return scenes[&next_scene_id].clone();
+            }
         }
-        let mut info = self.fight_scene_info.unwrap();
-        if info.player.health <= 0 {
-            return scenes[&info.on_death].clone();
-        }
-        if info.enemy.health <= 0 {
-            return scenes[&info.on_win].clone();
-        }
-        println!("Your health: {}; attack damage range: {}-{}", info.player.health, info.player.attack_min, info.player.attack_max);
-        println!("Enemy health: {}; attack damage range: {}-{}", info.enemy.health, info.enemy.attack_min, info.enemy.attack_max);
-        let choice = get_choice_from_user(self.choices.len() as u32);
-        // choice 1 is always attack
-        if choice == 1 {
-            let mut rng = rand::thread_rng();
-            let player_dmg = rng.gen_range(info.player.attack_min, info.player.attack_max);
-            let enemy_dmg = rng.gen_range(info.enemy.attack_min, info.enemy.attack_max);
-            println!("Player attacks and deals {} damage.", player_dmg);
-            println!("Enemy attacks at the same time and deals {} damage.", enemy_dmg);
-            info.enemy.health -= player_dmg;
-            info.player.health -= enemy_dmg;
-            return Scene {
-                id: self.id,
-                fight_scene_info: Option::from(info),
-                story: self.story,
-                choices: self.choices,
-            };
-        };
-        let next_scene_id: u32 = self.choices[choice as usize - 1].next_scene_id;
-        scenes[&next_scene_id].clone()
     }
 }
 
