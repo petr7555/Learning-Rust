@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use tokio::io::{self, AsyncBufReadExt, AsyncWriteExt, BufReader};
+use tokio::io::{self, AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter};
 use tokio::net::TcpListener;
 use tokio::sync::broadcast;
 
@@ -54,6 +54,7 @@ async fn main() -> io::Result<()> {
                 let message = rx.recv().await.unwrap();
                 println!("Sending message to client: {}", message);
                 wr.write_all(message.as_bytes()).await.unwrap();
+                wr.flush().await.unwrap();
             }
         });
     }
