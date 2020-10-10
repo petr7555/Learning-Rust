@@ -4,9 +4,6 @@ use tokio::io::{self, AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter};
 use tokio::net::TcpListener;
 use tokio::sync::broadcast;
 
-// connection logs
-// tx, rx broadcast
-// channels (topics)
 #[tokio::main]
 async fn main() -> io::Result<()> {
     let address = "127.0.0.1:5000";

@@ -1,4 +1,4 @@
-use adventure_game::{parse_scenes, scenes_into_map, play};
+use adventure_game_server::{parse_scenes, scenes_into_map, play};
 use std::env;
 
 fn main() {
