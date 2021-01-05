@@ -2,9 +2,13 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io;
 use std::io::{Error, Read};
+use std::sync::Arc;
 
 use rand::Rng;
 use serde::{Deserialize, Serialize};
+use tokio::io::{self, AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter};
+use tokio::net::TcpListener;
+use tokio::sync::broadcast;
 
 #[derive(Serialize, Deserialize)]
 pub struct Scenes {
@@ -98,10 +102,56 @@ pub fn scenes_into_map(scenes: Scenes) -> HashMap<u32, Scene> {
 }
 
 pub fn play(scenes: HashMap<u32, Scene>) {
-    const INITIAL_SCENE_INDEX: u32 = 0;
+    let address = "127.0.0.1:5000";
+    let mut listener = TcpListener::bind(address).await?;
 
-    let mut current_scene: Scene = scenes.get(&INITIAL_SCENE_INDEX)
-        .unwrap_or_else(|| panic!("Story file must contain scene with id {}", INITIAL_SCENE_INDEX)).clone();
+    println!("Server is listening on {}", address);
+
+    let (tx, _) = broadcast::channel(16);
+    let tx = Arc::new(tx);
+
+    loop {
+        let (stream, client_address) = listener.accept().await?;
+        println!("New client: {:?}", client_address);
+
+        let tx = tx.clone();
+        let mut rx = tx.subscribe();
+
+        let (rd, mut wr) = io::split(stream);
+        let mut rd = BufReader::new(rd);
+
+        tokio::spawn(async move {
+            let mut buf = String::new();
+
+            loop {
+                buf.clear();
+                match rd.read_line(&mut buf).await {
+                    Ok(0) => {
+                        println!("Client has closed the connection.");
+                        return;
+                    }
+                    Ok(_) => {
+                        println!("Server received: {}", buf);
+                        tx.send(buf.clone()).unwrap();
+                    }
+                    Err(e) => {
+                        eprintln!("Server failed to read from socket; err = {:?}", e);
+                        return;
+                    }
+                }
+            }
+        });
+
+        tokio::spawn(async move {
+            loop {
+                let message = rx.recv().await.unwrap();
+                println!("Sending message to client: {}", message);
+                wr.write_all(message.as_bytes()).await.unwrap();
+                wr.flush().await.unwrap();
+            }
+        });
+    }
+
     while !is_end_scene(&current_scene) {
         current_scene = current_scene.execute(&scenes);
     }
